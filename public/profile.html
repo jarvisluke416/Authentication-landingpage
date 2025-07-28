@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Profile</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #e9ecef;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .profile-box {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .info {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: #c82333;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-box">
+    <h1>Welcome</h1>
+    <div class="info" id="username"></div>
+    <div class="info" id="email"></div>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    async function loadProfile() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Not logged in');
+        window.location.href = '/login.html';
+        return;
+      }
+
+      const res = await fetch('/profile', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (res.status !== 200) {
+        alert('Unauthorized');
+        window.location.href = '/login.html';
+        return;
+      }
+
+      const user = await res.json();
+      document.getElementById('username').textContent = `Username: ${user.username}`;
+      document.getElementById('email').textContent = `Email: ${user.email}`;
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/login.html';
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>

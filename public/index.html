@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: transparent;
+      color: red;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .register-link {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .register-link a {
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    .register-link a:hover {
+      color: #0056b3;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+    }
+
+    #errorMessage {
+      color: red;
+      text-align: center;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Login</h1>
+    <form id="loginForm">
+      <label for="email"></label>
+      <input placeholder="Email" type="email" id="email" name="email" required />
+
+      <label for="password"></label>
+      <input placeholder="Password" type="password" id="password" name="password" required />
+
+      <button type="submit">Login</button>
+    </form>
+
+    <div id="errorMessage"></div>
+
+    <div class="register-link">
+      <p>Don't have an account? <a href="/register.html">Click here to register</a></p>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      errorMessage.textContent = ''; // Clear previous errors
+
+      const email = form.email.value;
+      const password = form.password.value;
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          // Successful login
+          // Optionally store token if returned:
+          if (data.token) {
+            localStorage.setItem('token', data.token);
+          }
+          // Redirect to profile page
+          window.location.href = '/profile.html';
+        } else {
+          // Login failed, show error message
+          errorMessage.textContent = data.message || 'Login failed. Please try again.';
+        }
+      } catch (error) {
+        errorMessage.textContent = 'An error occurred. Please try again later.';
+        console.error('Login error:', error);
+      }
+    });
+  </script>
+</body>
+</html>

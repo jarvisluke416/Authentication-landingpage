@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: transparent;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: transparent;
+      color: red;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #result {
+      text-align: center;
+      margin-top: 1rem;
+      color: green;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        margin: 1rem;
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Register</h1>
+    <form id="register-form">
+      <label for="username"></label>
+      <input placeholder="Username" type="text" name="username" required />
+
+      <label for="email"></label>
+      <input placeholder="Email" type="email" name="email" required />
+
+      <label for="password"></label>
+      <input placeholder="Password" type="password" name="password" required />
+
+      <label for="confirm-password"></label>
+      <input placeholder="Confirm Password" type="password" name="confirm-password" required />
+
+      <button type="submit">Register</button>
+    </form>
+    <p id="result"></p>
+    <!-- Link to Login Page -->
+    <p>Already have an account? <a href="/index.html" style="color: #0056b3; text-decoration: none;">Click here to login</a></p>
+  </div>
+<script>
+  const form = document.getElementById('register-form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const password = form.querySelector('input[name="password"]').value;
+    const confirmPassword = form.querySelector('input[name="confirm-password"]').value;
+
+    // Check if passwords match
+    if (password !== confirmPassword) {
+      document.getElementById('result').textContent = "Passwords do not match!";
+      document.getElementById('result').style.color = "red";
+      return;
+    }
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    const res = await fetch('/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    const result = await res.json();
+    if (res.ok && result.message) {
+      document.getElementById('result').textContent = result.message;
+      document.getElementById('result').style.color = "green";
+
+      // Redirect after 1 second
+      setTimeout(() => {
+        window.location.href = '/index.html';
+      }, 1000);
+    } else {
+      document.getElementById('result').textContent = 'Registration failed! Please try again.';
+      document.getElementById('result').style.color = "red";
+    }
+  });
+</script>
+
+</body>
+</html>
